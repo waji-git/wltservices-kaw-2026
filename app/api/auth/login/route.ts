@@ -5,7 +5,7 @@ export async function POST(request: Request) {
     const { username, password } = await request.json();
 
     // ⚠️ REPLACE THIS MOCK VALIDATION WITH YOUR DATABASE OR REVENUE API LOGIC
-    if (username === "admin" && password === "password123") {
+    if (username === "waji" && password === "978") {
       return NextResponse.json({
         success: true,
         message: "Authentication successful",
