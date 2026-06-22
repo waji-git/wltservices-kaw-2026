@@ -1,7 +1,8 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
-
+kavpower_db_user
+xvYqYAzGx4rHi5sY
 First, run the development server:
 
 ```bash

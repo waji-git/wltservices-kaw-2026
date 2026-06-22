@@ -4,6 +4,8 @@
 import React, { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import {LogOutIcon, UserIcon } from "lucide-react";
+
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -172,7 +174,10 @@ export default function DashboardPage() {
                         : "hover:bg-gray-100 text-gray-700"
                     }`}
                   >
-                    Profile
+                    <div className="flex items-center gap-2">
+                      <UserIcon className="h-4 w-4" />
+                      <span>Profile</span>
+                    </div>
                   </button>
                   <hr
                     className={`${
@@ -183,7 +188,10 @@ export default function DashboardPage() {
                     onClick={handleLogout}
                     className="block w-full text-left px-4 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
                   >
-                    Logout
+                    <div className="flex items-center gap-2">
+                      <LogOutIcon className="h-4 w-4" />
+                      <span>Logout</span>
+                    </div>
                   </button>
                 </div>
               </>

@@ -1,19 +1,19 @@
 
+
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // Added useEffect
+// Import both Server Actions
+import { addMovement, getMovements } from "@/app/actions/movement";
 
 export default function MovementPage() {
   const [movementMonth, setMovementMonth] = useState("June 2026");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFormDate, setSelectedFormDate] = useState("2026-06-01");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Dynamic state array holding submitted entries
-  const [movements, setMovements] = useState([
-    {
-     
-    },
-  ]);
+  // Core array where database rows live
+  const [movements, setMovements] = useState<any[]>([]);
 
   // Form field bindings
   const [formData, setFormData] = useState({
@@ -24,8 +24,28 @@ export default function MovementPage() {
     reason: "",
   });
 
+  // 🔄 FETCH EXISTING DATA FROM MONGODB ON PAGE LOAD
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const response = await getMovements();
+        if (response.success && response.data) {
+          setMovements(response.data);
+        } else {
+          console.error(
+            "Failed to load movements from database:",
+            response.error
+          );
+        }
+      } catch (err) {
+        console.error("Error reading database:", err);
+      }
+    }
+    loadData();
+  }, []); // Empty bracket runs this exactly once when the user signs in or opens this page
+
   // Open modal handler for a specific clicked date
-  const openAddModal = (dateString) => {
+  const openAddModal = (dateString: string) => {
     setSelectedFormDate(dateString);
     setFormData({
       inTime: "",
@@ -38,7 +58,7 @@ export default function MovementPage() {
   };
 
   // Convert 24h HTML input times to readable 12h AM/PM strings
-  const formatTimeTo12Hour = (timeString) => {
+  const formatTimeTo12Hour = (timeString: string) => {
     if (!timeString) return "--:--";
     const [hours, minutes] = timeString.split(":");
     const hourInt = parseInt(hours, 10);
@@ -47,9 +67,9 @@ export default function MovementPage() {
     return `${displayHour}:${minutes} ${ampm}`;
   };
 
-  // Form submit operations
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (
       !formData.inTime ||
       !formData.inLocation ||
@@ -61,32 +81,56 @@ export default function MovementPage() {
       return;
     }
 
-    const newRecord = {
-      id: Date.now(),
-      inDate: selectedFormDate,
-      inTime: formatTimeTo12Hour(formData.inTime),
-      inLocation: formData.inLocation,
-      outDate: selectedFormDate,
-      outTime: formatTimeTo12Hour(formData.outTime),
-      outLocation: formData.outLocation,
-      reason: formData.reason,
-      status: "pending",
-      action: "Read-only",
-    };
+    try {
+      setIsSubmitting(true);
 
-    setMovements([...movements, newRecord]);
-    setIsModalOpen(false);
+      const submitData = new FormData();
+      submitData.append("inDate", selectedFormDate);
+      submitData.append("inTime", formatTimeTo12Hour(formData.inTime));
+      submitData.append("inLocation", formData.inLocation);
+      submitData.append("outDate", selectedFormDate);
+      submitData.append("outTime", formatTimeTo12Hour(formData.outTime));
+      submitData.append("outLocation", formData.outLocation);
+      submitData.append("reasonCycle", formData.reason);
+
+      const response = await addMovement(submitData);
+
+      if (response.success) {
+        // Optimistically append the data locally so it renders immediately
+        const newRecord = {
+          id: Date.now().toString(),
+          inDate: selectedFormDate,
+          inTime: formatTimeTo12Hour(formData.inTime),
+          inLocation: formData.inLocation,
+          outDate: selectedFormDate,
+          outTime: formatTimeTo12Hour(formData.outTime),
+          outLocation: formData.outLocation,
+          reason: formData.reason,
+          status: "pending",
+          action: "Read-only",
+        };
+
+        setMovements([...movements, newRecord]);
+        setIsModalOpen(false);
+        alert("🎉 Saved to MongoDB successfully!");
+      } else {
+        alert(`❌ Database Error: ${response.error}`);
+      }
+    } catch (err: any) {
+      console.error(err);
+      alert("Failed to submit data to server.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // GENERATE ALL DAYS FOR JUNE 2026 (1 to 30)
   const generateJuneDays = () => {
     const days = [];
     for (let d = 1; d <= 30; d++) {
-      // Pad single digits (e.g. "1" becomes "01")
       const dayStr = String(d).padStart(2, "0");
       const fullDateStr = `2026-06-${dayStr}`;
 
-      // Generate clean dynamic UI string banner (e.g. "Mon, June 1, 2026")
       const displayBanner = new Date(fullDateStr).toLocaleDateString("en-US", {
         weekday: "short",
         month: "long",
@@ -103,7 +147,6 @@ export default function MovementPage() {
 
   return (
     <div className="animate-in fade-in duration-200 relative">
-      {/* Header Content Titles */}
       <h2 className="text-2xl font-bold tracking-tight">Movement</h2>
       <p className="text-sm mt-1 text-gray-500 dark:text-gray-400">
         You can add your movements here.
@@ -136,7 +179,7 @@ export default function MovementPage() {
         </button>
       </div>
 
-      {/* Badges Legend Grid */}
+      {/* Legend Badge Info */}
       <div className="flex flex-wrap items-center gap-2 mt-5 text-[11px] font-bold">
         <span className="bg-blue-600 text-white px-2 py-0.5 rounded">
           Device
@@ -182,16 +225,13 @@ export default function MovementPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
-            {/* DYNAMIC CALENDAR GENERATION LOOP */}
             {juneDaysArray.map((day) => {
-              // Find matching entries submitted for this particular date path
               const dayMovements = movements.filter(
                 (item) => item.inDate === day.fullDateStr
               );
 
               return (
                 <React.Fragment key={day.fullDateStr}>
-                  {/* Date Heading Header Section */}
                   <tr className="font-bold bg-gray-50 dark:bg-gray-900/40">
                     <td
                       colSpan={10}
@@ -201,7 +241,6 @@ export default function MovementPage() {
                     </td>
                   </tr>
 
-                  {/* Render submitted records if they exist */}
                   {dayMovements.map((row) => (
                     <tr
                       key={row.id}
@@ -223,7 +262,7 @@ export default function MovementPage() {
                         <span
                           className={`px-2 py-0.5 rounded text-[10px] font-bold text-white ${
                             row.status.includes("approved")
-                              ? "bg-gray-500"
+                              ? "bg-emerald-600"
                               : "bg-amber-500"
                           }`}
                         >
@@ -236,7 +275,6 @@ export default function MovementPage() {
                     </tr>
                   ))}
 
-                  {/* Add Movement Button Context Row */}
                   <tr>
                     <td colSpan={10} className="p-3 text-center">
                       <button
@@ -254,9 +292,7 @@ export default function MovementPage() {
         </table>
       </div>
 
-      {/* ========================================================
-          ADD MOVEMENT REQUEST DIALOG OVERLAY BOX MODAL
-          ======================================================== */}
+      {/* MODAL WINDOW DIALOG OVERLAY */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 backdrop-blur-xs">
           <div className="bg-white dark:bg-gray-950 rounded-xl max-w-3xl w-full shadow-2xl border border-gray-100 dark:border-gray-800 overflow-hidden text-gray-900 dark:text-gray-100">
@@ -279,7 +315,6 @@ export default function MovementPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                {/* DATES COLUMN */}
                 <div className="space-y-4">
                   <div>
                     <label className="block font-bold mb-1 text-gray-700 dark:text-gray-300">
@@ -305,7 +340,6 @@ export default function MovementPage() {
                   </div>
                 </div>
 
-                {/* TIMES COLUMN */}
                 <div className="space-y-4">
                   <div>
                     <label className="block font-bold mb-1 text-gray-700 dark:text-gray-300">
@@ -337,7 +371,6 @@ export default function MovementPage() {
                   </div>
                 </div>
 
-                {/* LOCATIONS COLUMN */}
                 <div className="space-y-4">
                   <div>
                     <label className="block font-bold mb-1 text-gray-700 dark:text-gray-300">
@@ -391,7 +424,7 @@ export default function MovementPage() {
                 ></textarea>
               </div>
 
-              <div className="flex items-center justify-end space-x-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+              <div className="flex items-center justify-end space-x-2 pt-2 border-t border-t-gray-100 dark:border-t-gray-800">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
@@ -401,9 +434,10 @@ export default function MovementPage() {
                 </button>
                 <button
                   type="submit"
-                  className="bg-blue-600 text-white font-semibold px-5 py-2 rounded text-xs"
+                  disabled={isSubmitting}
+                  className="bg-blue-600 text-white font-semibold px-5 py-2 rounded text-xs disabled:opacity-50"
                 >
-                  Submit
+                  {isSubmitting ? "Submitting..." : "Submit"}
                 </button>
               </div>
             </form>
