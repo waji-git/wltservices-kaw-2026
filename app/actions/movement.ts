@@ -1,71 +1,4 @@
 
-// "use strict";
-// "use server";
-
-// import mongoose from "mongoose";
-// import connectDB from "@/lib/db"; //
-// import Movement from "@/app/models/movement";
-// import { revalidatePath } from "next/cache";
-
-// export async function addMovement(formData: FormData) {
-//   try {
-//     await connectDB(); // Ensure DB is connected using your utility
-
-//     // Extract fields securely from UI form inputs
-//     const movementData = {
-//       inDate: formData.get("inDate"),
-//       inTime: formData.get("inTime"),
-//       inLocation: formData.get("inLocation"),
-//       outDate: formData.get("outDate"),
-//       outTime: formData.get("outTime"),
-//       outLocation: formData.get("outLocation"),
-//       reasonCycle: formData.get("reasonCycle"),
-//       status: "pending",
-//     };
-
-//     // Create and save to MongoDB
-//     const newMovement = new Movement(movementData);
-//     await newMovement.save();
-
-//     // Revalidate the path to clear Next.js caches
-//     revalidatePath("/dashboard/movement");
-
-//     return { success: true, message: "Movement entry saved successfully!" };
-//   } catch (error: any) {
-//     console.error("Database insertion error:", error);
-//     return { success: false, error: error.message || "Failed to save entry." };
-//   }
-// }
-
-// export async function getMovements() {
-//   try {
-//     // FIX: Use your dedicated connection helper here too!
-//     await connectDB();
-
-//     // Fetch records from MongoDB and turn them into plain JavaScript objects
-//     const data = await Movement.find({}).lean();
-
-//     // Map MongoDB objects into clean, plain JSON objects for the Client Component
-//     const formattedData = data.map((item: any) => ({
-//       id: item._id.toString(), // Safely stringifies MongoDB ObjectId
-//       inDate: item.inDate,
-//       inTime: item.inTime,
-//       inLocation: item.inLocation,
-//       outDate: item.outDate,
-//       outTime: item.outTime,
-//       outLocation: item.outLocation,
-//       reason: item.reasonCycle, // Maps schema key back to UI key
-//       status: item.status || "pending",
-//       action: "Read-only",
-//     }));
-
-//     return { success: true, data: formattedData };
-//   } catch (error: any) {
-//     console.error("Fetch Error:", error);
-//     return { success: false, error: error.message, data: [] };
-//   }
-// }
-
 
 "use strict";
 "use server";
@@ -149,5 +82,39 @@ export async function getMovements() {
   } catch (error: any) {
     console.error("Fetch Error:", error);
     return { success: false, error: error.message, data: [] };
+  }
+}
+
+// ===================================================
+// ADDED: EXPORTED FUNCTION TO DELETE FROM DATABASE
+// ===================================================
+export async function deleteMovement(id: string) {
+  try {
+    await connectDB();
+
+    if (!id) {
+      return { success: false, error: "No document ID provided for deletion." };
+    }
+
+    // Deletes the matching row permanently from MongoDB using its ID
+    const deletedItem = await Movement.findByIdAndDelete(id);
+
+    if (!deletedItem) {
+      return { success: false, error: "Document not found in the database." };
+    }
+
+    // Refresh Next.js layout data cache
+    revalidatePath("/dashboard/movement");
+
+    return {
+      success: true,
+      message: "Movement permanently deleted from database.",
+    };
+  } catch (error: any) {
+    console.error("Database delete error:", error);
+    return {
+      success: false,
+      error: error.message || "Failed to delete database entry.",
+    };
   }
 }
