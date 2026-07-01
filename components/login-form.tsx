@@ -1,83 +1,239 @@
-// import { cn } from "@/lib/utils";
-// import { Button } from "@/components/ui/button";
-// import {
-//   Card,
-//   CardContent,
-//   CardDescription,
-//   CardHeader,
-//   CardTitle,
-// } from "@/components/ui/card";
-// import {
-//   Field,
-//   // FieldDescription,
-//   FieldGroup,
-//   FieldLabel,
-// } from "@/components/ui/field";
-// import { Input } from "@/components/ui/input";
-// import Image from "next/image";
-// import Link from "next/link";
+// "use client";
 
-// export function LoginForm({
-//   className,
-//   ...props
-// }: React.ComponentProps<"div">) {
+// import { useState } from "react";
+
+// export default function AuthForm() {
+//   // Toggle between 'login' and 'register'
+//   const [isRegister, setIsRegister] = useState(false);
+
+//   // Form States
+//   const [name, setName] = useState("");
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [message, setMessage] = useState("");
+
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     setMessage("");
+
+//     // Determine the endpoint and payload based on mode
+//     const endpoint = isRegister ? "/api/auth/register" : "/api/auth/login";
+//     const payload = isRegister
+//       ? { name, email, password }
+//       : { username: email, password }; // Using email as username based on your UI
+
+//     try {
+//       const response = await fetch(endpoint, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify(payload),
+//       });
+
+//       const data = await response.json();
+//       if (response.ok) {
+//         setMessage(`${isRegister ? "Registration" : "Login"} successful!`);
+//       } else {
+//         setMessage(data.message || "Something went wrong.");
+//       }
+//     } catch (error) {
+//       setMessage("Failed to connect to the server.");
+//     }
+//   };
+
 //   return (
-//     <div className={cn("flex flex-col gap-15", className)} {...props}>
-//       <div className="flex items-center justify-center gap-5 ">
-//         <Image src="/slt.png" alt="SLT Logo" width={40} height={30} />
-//         <h1 className=" text-3xl text-blue-800 font-bold text-center">
-//           WLTSERVICES
-//         </h1>
+//     <div
+//       style={{
+//         maxWidth: "400px",
+//         margin: "50px auto",
+//         padding: "30px",
+//         border: "1px solid #e0e0e0",
+//         borderRadius: "12px",
+//         fontFamily: "sans-serif",
+//         boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+//       }}
+//     >
+//       <h2
+//         style={{ marginBottom: "10px", fontSize: "24px", fontWeight: "bold" }}
+//       >
+//         {isRegister ? "Create an account" : "Login to your account"}
+//       </h2>
+//       <p style={{ color: "#666", fontSize: "14px", marginBottom: "24px" }}>
+//         {isRegister
+//           ? "Enter your details below to sign up"
+//           : "Enter your email below to login to your account"}
+//       </p>
+
+//       <form
+//         onSubmit={handleSubmit}
+//         style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+//       >
+//         {/* Dynamic Input: ONLY shows when Register is clicked */}
+//         {isRegister && (
+//           <div>
+//             <label
+//               style={{
+//                 display: "block",
+//                 marginBottom: "6px",
+//                 fontWeight: "6px",
+//                 fontSize: "14px",
+//               }}
+//             >
+//               Name
+//             </label>
+//             <input
+//               type="text"
+//               placeholder="John Doe"
+//               value={name}
+//               onChange={(e) => setName(e.target.value)}
+//               required
+//               style={{
+//                 width: "100%",
+//                 padding: "10px",
+//                 borderRadius: "6px",
+//                 border: "1px solid #ccc",
+//                 boxSizing: "border-box",
+//               }}
+//             />
+//           </div>
+//         )}
+
+//         <div>
+//           <label
+//             style={{
+//               display: "block",
+//               marginBottom: "6px",
+//               fontWeight: "6px",
+//               fontSize: "14px",
+//             }}
+//           >
+//             Email
+//           </label>
+//           <input
+//             type="email"
+//             placeholder="john.doe@email.com"
+//             value={email}
+//             onChange={(e) => setEmail(e.target.value)}
+//             required
+//             style={{
+//               width: "100%",
+//               padding: "10px",
+//               borderRadius: "6px",
+//               border: "1px solid #ccc",
+//               boxSizing: "border-box",
+//             }}
+//           />
+//         </div>
+
+//         <div>
+//           <div
+//             style={{
+//               display: "flex",
+//               justifyContent: "space-between",
+//               marginBottom: "6px",
+//             }}
+//           >
+//             <label style={{ fontWeight: "6px", fontSize: "14px" }}>
+//               Password
+//             </label>
+//             {!isRegister && (
+//               <a
+//                 href="#"
+//                 style={{
+//                   fontSize: "12px",
+//                   color: "#666",
+//                   textDecoration: "none",
+//                 }}
+//               >
+//                 Forgot your password?
+//               </a>
+//             )}
+//           </div>
+//           <input
+//             type="password"
+//             value={password}
+//             onChange={(e) => setPassword(e.target.value)}
+//             required
+//             style={{
+//               width: "100%",
+//               padding: "10px",
+//               borderRadius: "6px",
+//               border: "1px solid #ccc",
+//               boxSizing: "border-box",
+//             }}
+//           />
+//         </div>
+
+//         <button
+//           type="submit"
+//           style={{
+//             width: "100%",
+//             padding: "12px",
+//             backgroundColor: "#10b981",
+//             color: "white",
+//             border: "none",
+//             borderRadius: "6px",
+//             fontSize: "16px",
+//             cursor: "pointer",
+//             fontWeight: "bold",
+//             marginTop: "10px",
+//           }}
+//         >
+//           {isRegister ? "Register" : "Login"}
+//         </button>
+//       </form>
+
+//       {message && (
+//         <p
+//           style={{
+//             textAlign: "center",
+//             marginTop: "15px",
+//             fontSize: "14px",
+//             color: message.includes("successful") ? "green" : "red",
+//           }}
+//         >
+//           {message}
+//         </p>
+//       )}
+
+//       {/* Toggle Link Footer */}
+//       <div
+//         style={{
+//           textAlign: "center",
+//           marginTop: "20px",
+//           fontSize: "14px",
+//           color: "#666",
+//         }}
+//       >
+//         {isRegister ? (
+//           <>
+//             Already have an account?{" "}
+//             <span
+//               onClick={() => setIsRegister(false)}
+//               style={{
+//                 color: "#10b981",
+//                 cursor: "pointer",
+//                 textDecoration: "underline",
+//               }}
+//             >
+//               Login
+//             </span>
+//           </>
+//         ) : (
+//           <>
+//             Don@apost have an account?{" "}
+//             <span
+//               onClick={() => setIsRegister(true)}
+//               style={{
+//                 color: "#10b981",
+//                 cursor: "pointer",
+//                 textDecoration: "underline",
+//               }}
+//             >
+//               Register
+//             </span>
+//           </>
+//         )}
 //       </div>
-
-//       <Card>
-//         <CardHeader>
-//           <CardTitle className="text-2xl font-bold">Login</CardTitle>
-//           <CardDescription className="font-bold">
-//             Please enter your username and password to login your account.
-//           </CardDescription>
-//         </CardHeader>
-//         <CardContent className="mt-9">
-//           <form>
-//             <FieldGroup className="flex flex-col gap-9">
-//               <Field>
-//                 <FieldLabel htmlFor="email">Username</FieldLabel>
-//                 <Input id="username" type="name" placeholder="" required />
-//               </Field>
-//               <Field>
-//                 <div className="flex items-center">
-//                   <FieldLabel htmlFor="password">Password</FieldLabel>
-//                   <a
-//                     href="#"
-//                     className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-//                   ></a>
-//                 </div>
-//                 <Input
-//                   id="password"
-//                   type="password"
-//                   autoComplete="new-password"
-//                   required
-//                 />
-//               </Field>
-//               <Field>
-//                 <Button
-//                   type="submit"
-//                   className="bg-blue-500 hover:bg-blue-600 text-white border-0"
-//                 >
-//                   Login
-//                 </Button>
-
-//                 <Link
-//                   href="/forgot-password"
-//                   className="block mt-3 text-center text-sm text-gray-400 hover:text-blue-500 "
-//                 >
-//                   Forget your password?
-//                 </Link>
-//               </Field>
-//             </FieldGroup>
-//           </form>
-//         </CardContent>
-//       </Card>
 //     </div>
 //   );
 // }
