@@ -139,10 +139,11 @@ export default function AuthForm() {
             </label>
             <input
               type="email"
-              placeholder="john.doe@email.com"
+              placeholder=""
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              autoComplete="one-time-code"
               style={{
                 width: "100%",
                 padding: "10px",
@@ -180,6 +181,7 @@ export default function AuthForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              autoComplete="new-password"
               style={{
                 width: "100%",
                 padding: "10px",
@@ -195,7 +197,7 @@ export default function AuthForm() {
             style={{
               width: "100%",
               padding: "12px",
-              backgroundColor: "#0070f3",  
+              backgroundColor: "#0070f3",
               color: "white",
               border: "none",
               borderRadius: "6px",
@@ -236,14 +238,12 @@ export default function AuthForm() {
                 onClick={() => setIsRegister(false)}
                 style={{
                   color: "#33333",
-                  // backgroundColor: "#0070f3",
+
                   cursor: "pointer",
                   textDecoration: "underline",
                 }}
-              >Login
-                {/* <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">
-                  Login
-                </button> */}
+              >
+                Login
               </span>
             </>
           ) : (
@@ -253,7 +253,6 @@ export default function AuthForm() {
                 onClick={() => setIsRegister(true)}
                 style={{
                   color: "#10b981",
-                  // color: "#0070f3",
                   cursor: "pointer",
                   textDecoration: "underline",
                 }}
@@ -268,16 +267,16 @@ export default function AuthForm() {
                   </span>
                 </Link>
                 <div className="w-full block">
-                  <div className="mt-8 flex items-center justify-center gap-1.5">
-                    <span className="font-normal text-sm text-gray-500">
+                  <div className="mt-8 flex items-center justify-center gap-1.5 ">
+                    <span className="font-normal text-sm text-gray-500 ">
                       Powered by
                     </span>
 
-                    <div className="h-4 w-2 -skew-x-12 bg-cyan-400"></div>
-                    <div className="h-4 w-2 -skew-x-12 bg-blue-600"></div>
-                    <div className="h-4 w-2 -skew-x-12 bg-green-400"></div>
+                    <div className="h-4 w-2 -skew-x-12 bg-cyan-400 "></div>
+                    <div className="h-5 w-2 -skew-x-12 bg-blue-600"></div>
+                    <div className="h-6 w-2 -skew-x-12 bg-green-400"></div>
 
-                    <h1 className="text-2xl font-bold text-blue-800">
+                    <h1 className="text-1xl font-bold text-blue-800">
                       WLTSERVICES
                     </h1>
                   </div>
