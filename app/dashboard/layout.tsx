@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { LogOutIcon, UserIcon } from "lucide-react";
+import { SessionProvider, signOut } from "next-auth/react";
 
 export default function DashboardLayout({
   children,
@@ -54,12 +55,12 @@ export default function DashboardLayout({
             <div className="h-6 w-1.5 -skew-x-12 bg-green-500"></div>
           </div>
           <span className={`text-xl font-bold tracking-wide ${isDarkMode ? "text-blue-400" : "text-blue-900"}`}>
-            SLTSERVICES
+            WLTSERVICES
           </span>
         </div>
 
         <h1 className={`text-2xl font-bold ${isDarkMode ? "text-gray-100" : "text-gray-800"}`}>
-          SLTS - ERP
+          WLTS - ERP
         </h1>
 
         <div className={`flex items-center space-x-4 ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>

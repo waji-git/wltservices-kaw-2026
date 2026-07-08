@@ -1,3 +1,5 @@
+
+
 "use client";
 
 import Link from "next/link";
@@ -12,7 +14,7 @@ export default function AuthForm() {
 
   // Form States
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(""); // Track email state for registration
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
@@ -20,13 +22,10 @@ export default function AuthForm() {
     e.preventDefault();
     setMessage("");
 
-    // Determine the endpoint and payload based on mode
     const endpoint = isRegister ? "/api/auth/register" : "/api/auth/login";
 
-    // Pass standard keys expected by backend API
-    const payload = isRegister
-      ? { name, email, password }
-      : { email, password };
+    // Standardized payloads based on mode
+    const payload = isRegister ? { name, email, password } : { name, password };
 
     try {
       const response = await fetch(endpoint, {
@@ -40,12 +39,13 @@ export default function AuthForm() {
       if (response.ok) {
         setMessage(`${isRegister ? "Registration" : "Login"} successful!`);
 
-        // Redirect to dashboard if login was successful
         if (!isRegister) {
           router.push("/dashboard");
         } else {
-          // If they just registered, switch them to the login screen automatically
           setIsRegister(false);
+          setName("");
+          setEmail("");
+          setPassword("");
         }
       } else {
         setMessage(data.message || "Something went wrong.");
@@ -69,7 +69,7 @@ export default function AuthForm() {
         <h1 className="text-3xl font-bold text-blue-800">WLTSERVICES</h1>
       </div>
 
-      {/* Auth Card - Now properly nested inside the main container */}
+      {/* Auth Card */}
       <div
         style={{
           width: "100%",
@@ -85,18 +85,47 @@ export default function AuthForm() {
         <h2
           style={{ marginBottom: "10px", fontSize: "24px", fontWeight: "bold" }}
         >
-          {isRegister ? "Create an account" : "Login "}
+          {isRegister ? "Create an account" : "Login"}
         </h2>
         <p style={{ color: "#666", fontSize: "14px", marginBottom: "24px" }}>
-          {isRegister ? "Enter your details below to sign up" : ""}
-          Please enter your email and password to login your account.
+          {isRegister
+            ? "Enter your details below to sign up."
+            : "Please enter your name and password to access your account."}
         </p>
 
         <form
           onSubmit={handleSubmit}
           style={{ display: "flex", flexDirection: "column", gap: "16px" }}
         >
-          {/* Dynamic Input: ONLY shows when Register is clicked */}
+          {/* Name Input (Used for both Login and Register) */}
+          <div>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "6px",
+                fontWeight: "bold",
+                fontSize: "14px",
+              }}
+            >
+              Name
+            </label>
+            <input
+              type="text"
+              placeholder="Enter your registered name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              style={{
+                width: "100%",
+                padding: "10px",
+                borderRadius: "6px",
+                border: "1px solid #ccc",
+                boxSizing: "border-box",
+              }}
+            />
+          </div>
+
+          {/* Email Input (ONLY shows when Register mode is true) */}
           {isRegister && (
             <div>
               <label
@@ -107,13 +136,13 @@ export default function AuthForm() {
                   fontSize: "14px",
                 }}
               >
-                Name
+                Email
               </label>
               <input
-                type="text"
-                placeholder=""
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                type="email"
+                placeholder="Enter your email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 style={{
                   width: "100%",
@@ -126,34 +155,7 @@ export default function AuthForm() {
             </div>
           )}
 
-          <div>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "6px",
-                fontWeight: "bold",
-                fontSize: "14px",
-              }}
-            >
-              Email
-            </label>
-            <input
-              type="email"
-              placeholder=""
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="one-time-code"
-              style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "6px",
-                border: "1px solid #ccc",
-                boxSizing: "border-box",
-              }}
-            />
-          </div>
-
+          {/* Password Input */}
           <div>
             <div
               style={{
@@ -165,23 +167,13 @@ export default function AuthForm() {
               <label style={{ fontWeight: "bold", fontSize: "14px" }}>
                 Password
               </label>
-              {!isRegister && (
-                <a
-                  href="#"
-                  style={{
-                    fontSize: "12px",
-                    color: "#666",
-                    textDecoration: "none",
-                  }}
-                ></a>
-              )}
             </div>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              autoComplete="new-password"
+              autoComplete={isRegister ? "new-password" : "current-password"}
               style={{
                 width: "100%",
                 padding: "10px",
@@ -210,6 +202,7 @@ export default function AuthForm() {
             {isRegister ? "Register" : "Login"}
           </button>
         </form>
+
         {message && (
           <p
             style={{
@@ -222,6 +215,7 @@ export default function AuthForm() {
             {message}
           </p>
         )}
+
         {/* Toggle Link Footer */}
         <div
           style={{
@@ -237,8 +231,7 @@ export default function AuthForm() {
               <span
                 onClick={() => setIsRegister(false)}
                 style={{
-                  color: "#33333",
-
+                  color: "#333",
                   cursor: "pointer",
                   textDecoration: "underline",
                 }}
@@ -248,7 +241,7 @@ export default function AuthForm() {
             </>
           ) : (
             <>
-              Don&apos; t have an account?{" "}
+              Don&apos;t have an account?{" "}
               <span
                 onClick={() => setIsRegister(true)}
                 style={{
@@ -260,9 +253,15 @@ export default function AuthForm() {
                 Register
               </span>
               <div>
-                {" "}
                 <Link href="/forgot-password">
-                  <span style={{ fontSize: "14px", fontWeight: "lighter" }}>
+                  <span
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: "lighter",
+                      display: "inline-block",
+                      marginTop: "10px",
+                    }}
+                  >
                     Forgot your password?
                   </span>
                 </Link>
@@ -271,11 +270,9 @@ export default function AuthForm() {
                     <span className="font-normal text-sm text-gray-500 ">
                       Powered by
                     </span>
-
                     <div className="h-4 w-2 -skew-x-12 bg-cyan-400 "></div>
                     <div className="h-5 w-2 -skew-x-12 bg-blue-600"></div>
                     <div className="h-6 w-2 -skew-x-12 bg-green-400"></div>
-
                     <h1 className="text-1xl font-bold text-blue-800">
                       WLTSERVICES
                     </h1>
