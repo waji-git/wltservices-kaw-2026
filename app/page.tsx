@@ -111,7 +111,8 @@ export default function AuthForm() {
             </label>
             <input
               type="text"
-              placeholder="Enter your registered name"
+              placeholder=""
+              autoComplete="off"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -173,7 +174,8 @@ export default function AuthForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              autoComplete={isRegister ? "new-password" : "current-password"}
+              autoComplete="new-password"
+              // autoComplete={isRegister ? "new-password" : "current-password"}
               style={{
                 width: "100%",
                 padding: "10px",
