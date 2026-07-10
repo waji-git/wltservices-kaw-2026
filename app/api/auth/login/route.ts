@@ -1,4 +1,17 @@
 
+
+const typedPassword = "password"; // What the user enters in the login form
+const databaseHash =
+  "$2b$10$2ZxtiVAVbYSE.dnsxtwV/OVjQ6hWfheH5bGVqjqHKGM9AmarUH6/K";
+
+const isMatch = await bcrypt.compare(typedPassword, databaseHash);
+
+if (isMatch) {
+  console.log("Password is correct!");
+} else {
+  console.log("Wrong password!");
+}
+
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/db";
 import User from "@/app/models/User";
@@ -20,17 +33,22 @@ export async function POST(request: Request) {
     // 2. Connect to MongoDB
     await connectToDatabase();
 
-    // 3. Find user by NAME instead of email
-    const user = await User.findOne({ name });
-    if (!user) {
+    // 3. Find user by NAME instead of email inside 'register' collection
+    const foundUserByName = await User.findOne({ name }).lean();
+
+    // 🚨 SAFETY CHECK: Stop right here if no user profile was found or password field is missing
+    if (!foundUserByName || !foundUserByName.password) {
       return NextResponse.json(
         { success: false, message: "Invalid name or password." },
         { status: 401 }
       );
     }
 
-    // 4. Check if the password matches
-    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    // 4. Check if the password matches using the matched variable
+    const isPasswordMatch = await bcrypt.compare(
+      password,
+      foundUserByName.password
+    );
     if (!isPasswordMatch) {
       return NextResponse.json(
         { success: false, message: "Invalid name or password." },
@@ -41,7 +59,8 @@ export async function POST(request: Request) {
     const secretKey = "wlt_services_super_secure_key_2026_fixed";
     const secret = new TextEncoder().encode(secretKey);
 
-    const token = await new SignJWT({ userId: user._id.toString() })
+    // 5. Generate token using the correct variable id mapping
+    const token = await new SignJWT({ userId: foundUserByName._id.toString() })
       .setProtectedHeader({ alg: "HS256" })
       .setExpirationTime("1d")
       .sign(secret);
@@ -70,5 +89,3 @@ export async function POST(request: Request) {
     );
   }
 }
-
-// Look at the bottom of your app/api/auth/login/route.ts file where response.cookies.set is called:

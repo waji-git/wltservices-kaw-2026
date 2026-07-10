@@ -1,5 +1,4 @@
 
-
 "use strict";
 "use server";
 
@@ -7,15 +6,43 @@ import mongoose from "mongoose";
 import connectDB from "@/lib/db";
 import Movement from "@/app/models/movement";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+import { jwtVerify } from "jose"; // 👈 Import jwtVerify to unpack your cookie payload
+
+const SECRET_KEY = "wlt_services_super_secure_key_2026_fixed";
+const SECRET = new TextEncoder().encode(SECRET_KEY);
+
+// Helper function to extract the true userId from the HTTP-only cookie
+async function getCustomSessionUserId() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value; // Reads the cookie named "token"
+
+  if (!token) return null;
+
+  try {
+    // Verify and decode the JWT payload using jose
+    const { payload } = await jwtVerify(token, SECRET);
+    return payload.userId as string; // 👈 Extracts the raw userId string safely!
+  } catch (error) {
+    console.error("JWT validation error in actions:", error);
+    return null;
+  }
+}
 
 export async function addMovement(formData: FormData) {
   try {
     await connectDB();
 
-    // 1. Check if an ID exists in the form (indicates an EDIT operation)
+    // 1. Authenticate and retrieve the explicit userId
+    const userId = await getCustomSessionUserId();
+    if (!userId) {
+      return { success: false, error: "Unauthorized: Please log in." };
+    }
+
     const id = formData.get("id");
 
     const movementData = {
+      userId: userId, // Bind entry explicitly to this user's object ID
       inDate: formData.get("inDate"),
       inTime: formData.get("inTime"),
       inLocation: formData.get("inLocation"),
@@ -26,36 +53,30 @@ export async function addMovement(formData: FormData) {
     };
 
     if (id) {
-      // 2. EDIT MODE: Update the existing document by its ID
-      await Movement.findByIdAndUpdate(
-        id,
+      // 2. EDIT MODE: Match both document ID and userId
+      const updatedDoc = await Movement.findOneAndUpdate(
+        { _id: id, userId: userId },
         { $set: movementData },
-        { runValidators: true } // Ensures schema validation rules apply to updates
+        { runValidators: true, new: true }
       );
+
+      if (!updatedDoc) {
+        return { success: false, error: "Record not found or unauthorized." };
+      }
     } else {
-      // 3. CREATE MODE: Add a brand new row if no ID is passed
+      // 3. CREATE MODE: Add a new row
       const newMovement = new Movement({
         ...movementData,
-        status: "pending", // Only default to pending for brand-new items
+        status: "pending",
       });
       await newMovement.save();
     }
 
-    // Revalidate the path to refresh the UI
     revalidatePath("/dashboard/movement");
-
-    return {
-      success: true,
-      message: id
-        ? "Movement entry updated successfully!"
-        : "Movement entry saved successfully!",
-    };
+    return { success: true, message: "Movement saved successfully!" };
   } catch (error: any) {
     console.error("Database operation error:", error);
-    return {
-      success: false,
-      error: error.message || "Failed to process entry.",
-    };
+    return { success: false, error: error.message };
   }
 }
 
@@ -63,7 +84,13 @@ export async function getMovements() {
   try {
     await connectDB();
 
-    const data = await Movement.find({}).lean();
+    const userId = await getCustomSessionUserId();
+    if (!userId) {
+      return { success: false, error: "Unauthorized", data: [] };
+    }
+
+    // 2. Query documents matching ONLY this verified userId
+    const data = await Movement.find({ userId: userId }).lean();
 
     const formattedData = data.map((item: any) => ({
       id: item._id.toString(),
@@ -80,41 +107,31 @@ export async function getMovements() {
 
     return { success: true, data: formattedData };
   } catch (error: any) {
-    console.error("Fetch Error:", error);
     return { success: false, error: error.message, data: [] };
   }
 }
 
-// ===================================================
-// ADDED: EXPORTED FUNCTION TO DELETE FROM DATABASE
-// ===================================================
 export async function deleteMovement(id: string) {
   try {
     await connectDB();
 
-    if (!id) {
-      return { success: false, error: "No document ID provided for deletion." };
+    const userId = await getCustomSessionUserId();
+    if (!userId) {
+      return { success: false, error: "Unauthorized" };
     }
 
-    // Deletes the matching row permanently from MongoDB using its ID
-    const deletedItem = await Movement.findByIdAndDelete(id);
+    const deletedDoc = await Movement.findOneAndDelete({
+      _id: id,
+      userId: userId,
+    });
 
-    if (!deletedItem) {
-      return { success: false, error: "Document not found in the database." };
+    if (!deletedDoc) {
+      return { success: false, error: "Record not found or unauthorized." };
     }
 
-    // Refresh Next.js layout data cache
     revalidatePath("/dashboard/movement");
-
-    return {
-      success: true,
-      message: "Movement permanently deleted from database.",
-    };
+    return { success: true };
   } catch (error: any) {
-    console.error("Database delete error:", error);
-    return {
-      success: false,
-      error: error.message || "Failed to delete database entry.",
-    };
+    return { success: false, error: error.message };
   }
 }

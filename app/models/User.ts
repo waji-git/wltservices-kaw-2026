@@ -1,5 +1,5 @@
 
-import mongoose, { Schema, model, models } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const UserSchema = new Schema(
   {
@@ -22,11 +22,11 @@ const UserSchema = new Schema(
   },
   {
     timestamps: true, // Automatically creates createdAt and updatedAt fields
-    collection: "register", // 👈 Forces Mongoose to save data inside the 'register' collection
   }
 );
 
-// If the model already exists, use it; otherwise, create a new one.
-const User = models.User || model("User", UserSchema);
+// 🔑 Clean Next.js model validation check with explicit collection enforcement
+const User =
+  mongoose.models.User || mongoose.model("User", UserSchema, "register");
 
 export default User;
