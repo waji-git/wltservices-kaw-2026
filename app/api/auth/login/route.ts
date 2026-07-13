@@ -36,13 +36,14 @@ export async function POST(request: Request) {
     // 3. Find user by NAME instead of email inside 'register' collection
     const foundUserByName = await User.findOne({ name }).lean();
 
-    // 🚨 SAFETY CHECK: Stop right here if no user profile was found or password field is missing
+   
     if (!foundUserByName || !foundUserByName.password) {
       return NextResponse.json(
         { success: false, message: "Invalid name or password." },
         { status: 401 }
       );
     }
+    
 
     // 4. Check if the password matches using the matched variable
     const isPasswordMatch = await bcrypt.compare(
