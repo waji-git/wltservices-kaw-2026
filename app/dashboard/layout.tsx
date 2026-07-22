@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import React, { useState } from "react";
@@ -47,10 +45,8 @@ export default function DashboardLayout({
     >
       {/* Top Header Bar */}
       <header
-        className={`flex items-center justify-between border-b px-4 py-3 shadow-sm transition-colors sm:px-6 ${
-          isDarkMode
-            ? "border-gray-800 bg-gray-900"
-            : "border-gray-200 bg-white"
+        className={`flex items-center justify-between border-b px-6 py-4 shadow-sm transition-colors ${
+          isDarkMode ? "border-gray-800 bg-gray-900" : "border-gray-200 bg-white"
         }`}
       >
         {/* Logo and Title */}
@@ -236,41 +232,9 @@ export default function DashboardLayout({
         </div>
       </header>
 
-      {/* Navigation Tabs - Responsive */}
-      {/* Show as horizontal tabs on larger screens, drawer on small screens */}
-      {isMobileMenuOpen && (
-        <div className="sm:hidden bg-gray-50 border-b border-gray-200">
-          <ul className="flex flex-col space-y-2 px-4 py-2 text-sm font-medium">
-            {navTabs.map((tab, index) => {
-              const isActive = pathname === tab.href;
-              return (
-                <li key={index}>
-                  <Link
-                    href={tab.href}
-                    className={`block px-2 py-2 rounded ${
-                      isActive
-                        ? "bg-blue-100 text-blue-600 font-semibold"
-                        : "hover:bg-gray-100"
-                    }`}
-                    onClick={() => setIsMobileMenuOpen(false)} // Close menu on link click
-                  >
-                    {tab.name}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      )}
-      <nav
-        className={`border-b transition-colors ${
-          isDarkMode
-            ? "bg-gray-900 border-gray-800"
-            : "bg-white border-gray-200"
-        }`}
-      >
-        {/* Desktop Tabs */}
-        <ul className="hidden sm:flex space-x-6 overflow-x-auto whitespace-nowrap px-6 pt-4 text-sm font-medium no-scrollbar">
+      {/* Navigation Tabs */}
+      <nav className={`border-b transition-colors ${isDarkMode ? "bg-gray-900 border-gray-800" : "bg-white border-gray-200"}`}>
+        <ul className={`flex space-x-6 overflow-x-auto whitespace-nowrap px-6 pt-4 text-sm font-medium no-scrollbar ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>
           {navTabs.map((tab, index) => {
             const isActive = pathname === tab.href;
             return (

@@ -59,11 +59,43 @@ export default function AuthForm() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
       {/* Logo Section */}
       <div className="mb-8 flex items-center space-x-3">
-        <div className="flex h-12 w-12 items-center justify-center border bg-white p-1">
-          <div className="flex space-x-1">
-            <div className="h-8 w-2 -skew-x-12 bg-cyan-400"></div>
-            <div className="h-8 w-2 -skew-x-12 bg-blue-600"></div>
-            <div className="h-8 w-2 -skew-x-12 bg-green-400"></div>
+        <div>
+          <div className="flex h-16 w-16 items-center justify-center">
+            <svg
+              className="h-full w-full"
+              viewBox="0 0 100 100"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                x="28"
+                y="10"
+                width="12"
+                height="42"
+                rx="6"
+                transform="rotate(25 34 31)"
+                fill="#1eaae6"
+              />
+              <rect
+                x="28"
+                y="50"
+                width="12"
+                height="42"
+                rx="6"
+                transform="rotate(25 34 71)"
+                fill="#0051b3"
+              />
+              <circle cx="62" cy="54" r="5" fill="#4bc449" />
+              <rect
+                x="68"
+                y="42"
+                width="12"
+                height="48"
+                rx="6"
+                transform="rotate(25 74 66)"
+                fill="#4bc449"
+              />
+            </svg>
           </div>
         </div>
         <h1 className="text-3xl font-bold text-blue-800">WLTSERVICES</h1>
@@ -141,7 +173,7 @@ export default function AuthForm() {
               </label>
               <input
                 type="email"
-                placeholder="Enter your email address"
+                // placeholder="Enter your email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -233,7 +265,7 @@ export default function AuthForm() {
               <span
                 onClick={() => setIsRegister(false)}
                 style={{
-                  color: "#333",
+                  color: "#10b981",
                   cursor: "pointer",
                   textDecoration: "underline",
                 }}
@@ -272,9 +304,47 @@ export default function AuthForm() {
                     <span className="font-normal text-sm text-gray-500 ">
                       Powered by
                     </span>
-                    <div className="h-4 w-2 -skew-x-12 bg-cyan-400 "></div>
-                    <div className="h-5 w-2 -skew-x-12 bg-blue-600"></div>
-                    <div className="h-6 w-2 -skew-x-12 bg-green-400"></div>
+
+                    <div>
+                      <div className="flex h-14 w-12 items-center justify-center">
+                        <svg
+                          className="h-full w-full"
+                          viewBox="0 0 100 100"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <rect
+                            x="28"
+                            y="10"
+                            width="12"
+                            height="42"
+                            rx="6"
+                            transform="rotate(25 34 31)"
+                            fill="#1eaae6"
+                          />
+                          <rect
+                            x="28"
+                            y="50"
+                            width="12"
+                            height="42"
+                            rx="6"
+                            transform="rotate(25 34 71)"
+                            fill="#0051b3"
+                          />
+                          <circle cx="62" cy="54" r="5" fill="#4bc449" />
+                          <rect
+                            x="68"
+                            y="42"
+                            width="12"
+                            height="48"
+                            rx="6"
+                            transform="rotate(25 74 66)"
+                            fill="#4bc449"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+
                     <h1 className="text-1xl font-bold text-blue-800">
                       WLTSERVICES
                     </h1>
