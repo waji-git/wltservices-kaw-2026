@@ -1,55 +1,4 @@
 
-// import { NextResponse } from "next/server";
-// import connectToDatabase from "@/lib/db";
-// import User from "@/app/models/User";
-// import bcrypt from "bcryptjs";
-
-// export async function POST(request: Request) {
-//   try {
-//     const { name, email, password, role } = await request.json();
-
-//     // 1. Validate inputs
-//     if (!name || !password) {
-//       return NextResponse.json(
-//         { success: false, message: "Name and password are required." },
-//         { status: 400 }
-//       );
-//     }
-
-//     await connectToDatabase();
-
-//     // 2. Check if user already exists
-//     const existingUser = await User.findOne({ name });
-//     if (existingUser) {
-//       return NextResponse.json(
-//         { success: false, message: "User already exists." },
-//         { status: 400 }
-//       );
-//     }
-
-//     // 3. DEFINE hashedPassword HERE 🔑
-//     const salt = await bcrypt.genSalt(10);
-//     const hashedPassword = await bcrypt.hash(password, salt);
-
-//     // 4. Create new user in MongoDB
-//     const newUser = await User.create({
-//       name,
-//       email,
-//       password: hashedPassword, // 🟢 Variable is now defined!
-//       role: role || "employee",
-//     });
-
-//     return NextResponse.json({ success: true, user: newUser }, { status: 201 });
-//   } catch (error: any) {
-//     console.error("Register API Error:", error);
-//     return NextResponse.json(
-//       { success: false, message: error.message || "Internal server error" },
-//       { status: 500 }
-//     );
-//   }
-// }
-
-
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/db";
 import User from "@/app/models/User";
@@ -80,15 +29,36 @@ export async function POST(request: Request) {
       );
     }
 
+    // 🛡️ ADMIN LIMIT LOGIC: Maximum 2 Admins allowed
+    let assignedRole = role || "employee";
+
+    if (assignedRole === "admin") {
+      const adminCount = await User.countDocuments({ role: "admin" });
+
+      if (adminCount >= 2) {
+        // Option A: Block registration with an error message
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Admin limit reached! Only 2 admin users are allowed.",
+          },
+          { status: 403 }
+        );
+
+        // Option B: Automatically downgrade to "employee" instead (uncomment below if preferred)
+        // assignedRole = "employee";
+      }
+    }
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // 🔑 Pass 'role' explicitly into User.create()
+    // 🔑 Create user with validated assignedRole
     const newUser = await User.create({
       name,
       email,
       password: hashedPassword,
-      role: role || "employee",
+      role: assignedRole,
     });
 
     console.log("SAVED USER IN DB:", newUser);
