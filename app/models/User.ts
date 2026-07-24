@@ -1,32 +1,26 @@
 
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, model, models } from "mongoose";
 
+// 1. Define the Schema including the 'role' field
 const UserSchema = new Schema(
   {
-    name: {
+    name: { type: String, required: true },
+    employeeNo: { type: String, required: true },
+    email: { type: String },
+    password: { type: String, required: true },
+    role: {
       type: String,
-      required: [true, "Name is required"],
-    },
-    email: {
-      type: String,
-      required: [true, "Email is required"],
-      unique: true, // Prevents duplicate email signups
-      lowercase: true,
-      trim: true,
-    },
-    password: {
-      type: String,
-      required: [true, "Password is required"],
-      minlength: [6, "Password must be at least 6 characters long"],
-    },
+      enum: ["employee", "admin"],
+      default: "employee",
+    }, // 👈 THIS FIELD WAS MISSING FROM YOUR SCHEMA!
   },
-  {
-    timestamps: true, // Automatically creates createdAt and updatedAt fields
-  }
+  { timestamps: true }
 );
 
-// 🔑 Clean Next.js model validation check with explicit collection enforcement
-const User =
-  mongoose.models.User || mongoose.model("User", UserSchema, "register");
+// 2. IMPORTANT: Delete cached model in development to force Next.js to reload the schema
+if (process.env.NODE_ENV === "development" && models.User) {
+  delete models.User;
+}
 
+const User = models.User || model("User", UserSchema);
 export default User;
