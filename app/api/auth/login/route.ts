@@ -1,28 +1,15 @@
 
-
-const typedPassword = "password"; // What the user enters in the login form
-const databaseHash =
-  "$2b$10$2ZxtiVAVbYSE.dnsxtwV/OVjQ6hWfheH5bGVqjqHKGM9AmarUH6/K";
-
-const isMatch = await bcrypt.compare(typedPassword, databaseHash);
-
-if (isMatch) {
-  console.log("Password is correct!");
-} else {
-  console.log("Wrong password!");
-}
-
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/db";
 import User from "@/app/models/User";
 import bcrypt from "bcryptjs";
-import { SignJWT } from "jose"; // Using jose for Next.js cookie creation
+import { SignJWT } from "jose";
 
 export async function POST(request: Request) {
   try {
     const { name, password } = await request.json();
 
-    // 1. Validate that Name and Password are provided
+    // 1. Validate input
     if (!name || !password) {
       return NextResponse.json(
         { success: false, message: "Name and password are required." },
@@ -33,23 +20,22 @@ export async function POST(request: Request) {
     // 2. Connect to MongoDB
     await connectToDatabase();
 
-    // 3. Find user by NAME instead of email inside 'register' collection
+    // 3. Find user
     const foundUserByName = await User.findOne({ name }).lean();
 
-   
     if (!foundUserByName || !foundUserByName.password) {
       return NextResponse.json(
         { success: false, message: "Invalid name or password." },
         { status: 401 }
       );
     }
-    
 
-    // 4. Check if the password matches using the matched variable
+    // 4. Compare passwords
     const isPasswordMatch = await bcrypt.compare(
       password,
       foundUserByName.password
     );
+
     if (!isPasswordMatch) {
       return NextResponse.json(
         { success: false, message: "Invalid name or password." },
@@ -57,28 +43,41 @@ export async function POST(request: Request) {
       );
     }
 
-    const secretKey = "wlt_services_super_secure_key_2026_fixed";
+    // 🔑 Determine Role (Defaults to 'employee' if not specified in DB)
+    const userRole = foundUserByName.role || "employee";
+
+    const secretKey =
+      process.env.JWT_SECRET || "wlt_services_super_secure_key_2026_fixed";
     const secret = new TextEncoder().encode(secretKey);
 
-    // 5. Generate token using the correct variable id mapping
-    const token = await new SignJWT({ userId: foundUserByName._id.toString() })
+    // 5. Generate token containing BOTH userId and role
+    const token = await new SignJWT({
+      userId: foundUserByName._id.toString(),
+      role: userRole,
+      name: foundUserByName.name,
+    })
       .setProtectedHeader({ alg: "HS256" })
       .setExpirationTime("1d")
       .sign(secret);
 
-    // 6. Return response and save the token into an HTTP-only cookie
+    // 6. Send role in JSON response for client-side redirection
     const response = NextResponse.json(
-      { success: true, message: "Login successful!" },
+      {
+        success: true,
+        message: "Login successful!",
+        role: userRole, // 👈 Required for frontend routing
+      },
       { status: 200 }
     );
 
+    // Save token in HTTP-only cookie
     response.cookies.set({
       name: "token",
       value: token,
-      httpOnly: true, // Prevents client-side scripts from stealing the token
+      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",
-      maxAge: 60 * 60 * 24, // 1 day expiration
+      maxAge: 60 * 60 * 24,
     });
 
     return response;
