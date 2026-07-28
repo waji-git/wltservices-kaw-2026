@@ -23,6 +23,3 @@ const MovementSchema = new mongoose.Schema(
 
 export default mongoose.models.Movement ||
   mongoose.model("Movement", MovementSchema, "movements");
-
-
-  // 

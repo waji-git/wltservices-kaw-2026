@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { MongoClient } from "mongodb";
 import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 const uri = process.env.MONGODB_URI || "your_mongodb_connection_string_here";
 const SECRET_KEY = "wlt_services_super_secure_key_2026_fixed";
@@ -72,3 +74,6 @@ export async function POST(request: Request) {
     await client.close();
   }
 }
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
