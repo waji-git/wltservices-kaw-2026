@@ -1,9 +1,7 @@
-
 "use client";
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Sun, Bell, User, LogOut } from "lucide-react";
 import {
   getAllUserMovements,
   updateMovementApproval,
@@ -19,16 +17,6 @@ export default function AdminMovementApprovalPage() {
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Dropdown state
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  // Logout Handler
-  const handleLogout = () => {
-    setIsDropdownOpen(false);
-    router.push("/");
-  };
-
-  // Load all user records from MongoDB
   const loadData = async () => {
     const res = await getAllUserMovements();
     if (res.success && res.data) {
@@ -78,43 +66,6 @@ export default function AdminMovementApprovalPage() {
             Review, approve, or reject movement correction requests submitted by
             employees.
           </p>
-        </div>
-
-        {/* Top-Right Action Icons */}
-        <div className="flex items-center space-x-4 relative">
-          {/* Profile Dropdown Container */}
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="p-1.5 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition"
-            >
-              <User className="w-6 h-6" />
-            </button>
-
-            {/* Profile Popup Menu */}
-            {isDropdownOpen && (
-              <>
-                {/* Backdrop to close menu when clicking outside */}
-                <div
-                  className="fixed inset-0 z-10"
-                  onClick={() => setIsDropdownOpen(false)}
-                />
-
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 z-20 overflow-hidden py-1">
-                  <div className="border-t border-gray-100 dark:border-gray-800 my-0.5" />
-
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-left px-4 py-3 text-sm text-red-600 dark:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 flex items-center gap-3 font-semibold transition"
-                  >
-                    <LogOut className="w-4 h-4 text-red-600 dark:text-red-500" />
-                    <span>Logout</span>
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
         </div>
       </div>
 

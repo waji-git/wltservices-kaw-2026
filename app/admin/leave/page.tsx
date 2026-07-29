@@ -1,17 +1,23 @@
 
-
 "use client";
-
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   getAllLeaveRequests,
   updateLeaveApproval,
 } from "@/app/actions/adminleave";
 
+
 export default function AdminLeavePage() {
+
+  const router = useRouter();
   const [leaveRequests, setLeaveRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+   
+ const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
 
   useEffect(() => {
     async function loadData() {
