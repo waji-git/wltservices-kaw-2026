@@ -94,7 +94,7 @@ export default function DashboardLayout({
         
 
           <span
-            className={`text-xl font-bold tracking-wide ${
+            className={`text-3xl font-bold tracking-wide ${
               isDarkMode ? "text-blue-400" : "text-blue-900"
             }`}
           >
@@ -104,11 +104,11 @@ export default function DashboardLayout({
 
         {/* Title */}
         <h1
-          className={`text-xl font-bold ${
+          className={`text-3xl font-bold ${
             isDarkMode ? "text-gray-100" : "text-gray-800"
           }`}
         >
-          WLTS - ERP
+          WLTS - HRIS
         </h1>
 
         {/* Icons and Profile Dropdown */}
