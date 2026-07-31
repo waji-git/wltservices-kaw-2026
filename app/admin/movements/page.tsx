@@ -60,7 +60,7 @@ export default function AdminMovementApprovalPage() {
       <div className="border-b pb-3 mb-5 flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">
-            Admin Approval Panel
+            Movement  Approval Panel  
           </h2>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             Review, approve, or reject movement correction requests submitted by

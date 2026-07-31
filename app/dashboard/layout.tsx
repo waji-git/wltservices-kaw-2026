@@ -46,15 +46,53 @@ export default function DashboardLayout({
       {/* Top Header Bar */}
       <header
         className={`flex items-center justify-between border-b px-6 py-4 shadow-sm transition-colors ${
-          isDarkMode ? "border-gray-800 bg-gray-900" : "border-gray-200 bg-white"
+          isDarkMode
+            ? "border-gray-800 bg-gray-900"
+            : "border-gray-200 bg-white"
         }`}
       >
         {/* Logo and Title */}
         <div className="flex items-center space-x-2">
-          <div className="flex space-x-1 italic">
-            <div className="h-6 w-1.5 -skew-x-12 bg-blue-500"></div>
-            <div className="h-6 w-1.5 -skew-x-12 bg-green-500"></div>
-          </div>
+                
+            <div className="flex h-14 w-12 items-center justify-center">
+              <svg
+                className="h-full w-full"
+                viewBox="0 0 100 100"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  x="28"
+                  y="10"
+                  width="12"
+                  height="42"
+                  rx="6"
+                  transform="rotate(25 34 31)"
+                  fill="#1eaae6"
+                />
+                <rect
+                  x="28"
+                  y="50"
+                  width="12"
+                  height="42"
+                  rx="6"
+                  transform="rotate(25 34 71)"
+                  fill="#0051b3"
+                />
+                <circle cx="62" cy="54" r="5" fill="#4bc449" />
+                <rect
+                  x="68"
+                  y="42"
+                  width="12"
+                  height="48"
+                  rx="6"
+                  transform="rotate(25 74 66)"
+                  fill="#4bc449"
+                />
+              </svg>
+            </div>
+        
+
           <span
             className={`text-xl font-bold tracking-wide ${
               isDarkMode ? "text-blue-400" : "text-blue-900"
@@ -233,8 +271,18 @@ export default function DashboardLayout({
       </header>
 
       {/* Navigation Tabs */}
-      <nav className={`border-b transition-colors ${isDarkMode ? "bg-gray-900 border-gray-800" : "bg-white border-gray-200"}`}>
-        <ul className={`flex space-x-6 overflow-x-auto whitespace-nowrap px-6 pt-4 text-sm font-medium no-scrollbar ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>
+      <nav
+        className={`border-b transition-colors ${
+          isDarkMode
+            ? "bg-gray-900 border-gray-800"
+            : "bg-white border-gray-200"
+        }`}
+      >
+        <ul
+          className={`flex space-x-6 overflow-x-auto whitespace-nowrap px-6 pt-4 text-sm font-medium no-scrollbar ${
+            isDarkMode ? "text-gray-400" : "text-gray-600"
+          }`}
+        >
           {navTabs.map((tab, index) => {
             const isActive = pathname === tab.href;
             return (
