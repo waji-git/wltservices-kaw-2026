@@ -8,7 +8,7 @@ export default function Footer() {
       <div className="flex items-center gap-2">
         {/* <Logo className="h-6 w-6" /> */}
         <p className="text-muted-foreground text-left text-sm leading-loose">
-          @ 2026 kaw All rights reserved
+          @ 2026 WajiPro All rights reserved
         </p>
       </div>
 
