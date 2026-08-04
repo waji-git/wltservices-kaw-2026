@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 
 export default function DashboardPage() {
   const pathname = usePathname();
-  const [movementMonth, setMovementMonth] = useState("June 2026");
+
 
   // State to hold the dynamic logged-in user name and avatar initial
   const [user, setUser] = useState({ name: "Loading...", initial: "U" });
