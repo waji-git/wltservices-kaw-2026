@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
@@ -125,6 +124,15 @@ export default function MovementPage() {
     outLocation: "",
     reason: "",
   });
+
+  // Today ISO Date string formatted YYYY-MM-DD for fast date comparison
+  const todayStr = useMemo(() => {
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = String(today.getMonth() + 1).padStart(2, "0");
+    const d = String(today.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }, []);
 
   // Fetch Movements Data
   const loadData = useCallback(async () => {
@@ -271,7 +279,7 @@ export default function MovementPage() {
   // Status Style Helper
   const getStatusBadgeStyle = (status?: string) => {
     const s = status?.toUpperCase() || "PENDING";
-    if (s.includes("REJECT")) return "bg-amber-500 text-white"; // Matches screenshot orange REJECTED
+    if (s.includes("REJECT")) return "bg-amber-500 text-white";
     if (s.includes("APPROV")) return "bg-emerald-600 text-white";
     return "bg-amber-500 text-white";
   };
@@ -299,7 +307,7 @@ export default function MovementPage() {
 
   return (
     <div className="p-4 space-y-2 font-sans text-xs">
-        <div className="flex flex-col gap-0.5">
+      <div className="flex flex-col gap-0.5">
         <h2 className="text-2xl font-bold tracking-tight">Movement</h2>
         <p className="text-sm text-gray-500 dark:text-gray-400">
           You can add your movements here.
@@ -405,6 +413,15 @@ export default function MovementPage() {
               const dayMovements = movements.filter(
                 (m) => m.inDate === day.fullDateStr
               );
+
+              // 1. Check if the day is strictly in the past (before today)
+              const isPastDay = day.fullDateStr < todayStr;
+
+              // 2. Check if a movement record already exists for this day
+              const hasExistingMovement = dayMovements.length > 0;
+
+              // Determine if the user is allowed to add a movement on this day
+              const canAddMovement = isPastDay && !hasExistingMovement;
 
               return (
                 <React.Fragment key={day.fullDateStr}>
@@ -550,7 +567,7 @@ export default function MovementPage() {
                         </td>
                         <td className="p-3 text-center">
                           <div className="flex items-center justify-center space-x-1.5">
-                            {/* Edit Button (Blue Border Box) */}
+                            {/* Edit Button */}
                             <button
                               onClick={() => startInlineEdit(row)}
                               className="p-1.5 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-50 transition"
@@ -572,7 +589,7 @@ export default function MovementPage() {
                               </svg>
                             </button>
 
-                            {/* Delete Button (Red Border Box) */}
+                            {/* Delete Button */}
                             <button
                               onClick={() => handleDeleteMovement(row.id)}
                               className="p-1.5 border border-red-500 text-red-500 rounded-lg hover:bg-red-50 transition"
@@ -600,17 +617,19 @@ export default function MovementPage() {
                     )
                   )}
 
-                  {/* Add Movement Button Row */}
-                  <tr>
-                    <td colSpan={10} className="p-2.5 text-center">
-                      <button
-                        onClick={() => openAddModal(day.fullDateStr)}
-                        className="border border-emerald-500 text-emerald-500 bg-white hover:bg-emerald-50 px-4 py-1 rounded-md text-xs font-semibold transition"
-                      >
-                        + Add Movement
-                      </button>
-                    </td>
-                  </tr>
+                  {/* Add Movement Button Row (Only rendered if past day AND no existing entry) */}
+                  {canAddMovement && (
+                    <tr>
+                      <td colSpan={10} className="p-2.5 text-center">
+                        <button
+                          onClick={() => openAddModal(day.fullDateStr)}
+                          className="border border-emerald-500 text-emerald-500 bg-white hover:bg-emerald-50 px-4 py-1 rounded-md text-xs font-semibold transition"
+                        >
+                          + Add Movement
+                        </button>
+                      </td>
+                    </tr>
+                  )}
                 </React.Fragment>
               );
             })}
