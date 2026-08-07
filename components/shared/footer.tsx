@@ -1,5 +1,4 @@
-// import { Logs } from "lucide-react";
-// import { Logo } from "@/components/shared/logo";
+
 import Link from "next/link";
 
 export default function Footer() {
