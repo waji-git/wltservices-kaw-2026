@@ -581,9 +581,10 @@ export default function AuthForm() {
 
   return (
     // Main container now uses flex-row for the 2-column layout on desktop
-    <div className="min-h-screen flex flex-col md:flex-row items-center justify-center bg-gray-50 p-4 md:p-10 font-sans">
+    <div className="min-h-screen flex flex-col md:flex-row items-start justify-center bg-gray-50 px-4 pb-4 pt-0 md:px-10 md:pb-10 md:pt-4 font-sans">
       {/* --- LEFT SIDE: LOGO, ILLUSTRATION, AND TEXT (visible on md+) --- */}
-      <div className="hidden md:flex flex-col flex-1 h-full max-w-[50%] p-12 pr-20 justify-between">
+ 
+      <div className="hidden md:flex flex-col flex-1 h-full max-w-[50%] p-8 pr-20 justify-between">
         {/* Top Logo and Name */}
         <div className="flex items-center space-x-3">
           <Logo className="h-10" />
@@ -597,25 +598,24 @@ export default function AuthForm() {
           <img
             src="/hr.png"
             alt="HR Management Illustration"
-            className="max-w-[100%] max-h-[400px] h-auto object-contain"
+            className="max-w-[100%] max-h-[350px] h-auto object-contain"
           />
         </div>
 
         {/* Bottom Text Description */}
         <div className="mt-auto">
-          <p className="text-2xl font-extrabold text-gray-700 uppercase tracking-wide mb-2">
+          <p className="text-1xl font-extrabold text-gray-700 uppercase tracking-wide mb-2">
             SRI LANKA TELECOM (SERVICES) LIMITED
           </p>
           <h2 className="text-1xl font-semibold text-gray-900 mb-4 leading-tight">
             Your Work. Your HR. One Place.
           </h2>
-          <p className="text-lg text-gray-600 leading-relaxed max-w-lg">
+          <p className="text-md text-gray-600 leading-relaxed max-w-lg">
             A simple and connected way to access your HR services, manage your
             work information and stay connected with SLT Services.
           </p>
         </div>
       </div>
-
       {/* --- RIGHT SIDE / MOBILE TOP: AUTH CARD --- */}
       <div className="flex flex-1 justify-center items-center w-full max-w-md md:max-w-none md:justify-start md:pl-10">
         {/* Auth Card */}
@@ -892,7 +892,7 @@ export default function AuthForm() {
                 <span
                   onClick={() => setIsRegister(true)}
                   style={{
-                    color: "#0070f3",
+                    color: "#10b981",
                     cursor: "pointer",
                     textDecoration: "underline",
                   }}
@@ -912,70 +912,58 @@ export default function AuthForm() {
                       Forgot your password?
                     </span>
                   </Link>
+                  <div className="w-full block">
+                    <div className="mt-8 flex items-center justify-center gap-1.5 ">
+                      <span className="font-normal text-sm text-gray-500 ">
+                        Powered by
+                      </span>
 
-
-                <div className="w-full block">
-                  <div className="mt-8 flex items-center justify-center gap-1.5 ">
-                    <span className="font-normal text-sm text-gray-500 ">
-                      Powered by
-                    </span>
-
-                    <div>
-                      <div className="flex h-14 w-12 items-center justify-center">
-                        <svg
-                          className="h-full w-full"
-                          viewBox="0 0 100 100"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <rect
-                            x="28"
-                            y="10"
-                            width="12"
-                            height="42"
-                            rx="6"
-                            transform="rotate(25 34 31)"
-                            fill="#1eaae6"
-                          />
-                          <rect
-                            x="28"
-                            y="50"
-                            width="12"
-                            height="42"
-                            rx="6"
-                            transform="rotate(25 34 71)"
-                            fill="#0051b3"
-                          />
-                          <circle cx="62" cy="54" r="5" fill="#4bc449" />
-                          <rect
-                            x="68"
-                            y="42"
-                            width="12"
-                            height="48"
-                            rx="6"
-                            transform="rotate(25 74 66)"
-                            fill="#4bc449"
-                          />
-                        </svg>
+                      <div>
+                        <div className="flex h-14 w-12 items-center justify-center">
+                          <svg
+                            className="h-full w-full"
+                            viewBox="0 0 100 100"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <rect
+                              x="28"
+                              y="10"
+                              width="12"
+                              height="42"
+                              rx="6"
+                              transform="rotate(25 34 31)"
+                              fill="#1eaae6"
+                            />
+                            <rect
+                              x="28"
+                              y="50"
+                              width="12"
+                              height="42"
+                              rx="6"
+                              transform="rotate(25 34 71)"
+                              fill="#0051b3"
+                            />
+                            <circle cx="62" cy="54" r="5" fill="#4bc449" />
+                            <rect
+                              x="68"
+                              y="42"
+                              width="12"
+                              height="48"
+                              rx="6"
+                              transform="rotate(25 74 66)"
+                              fill="#4bc449"
+                            />
+                          </svg>
+                        </div>
                       </div>
+
+                      <h1 className="text-1xl font-bold text-blue-800">
+                        WLTSERVICES
+                      </h1>
                     </div>
-
-                    <h1 className="text-1xl font-bold text-blue-800">
-                      WLTSERVICES
-                    </h1>
                   </div>
-                </div>;
-
-
-
-
-
-
-
-
-
-
-
+                  ;
                 </div>
               </>
             )}
