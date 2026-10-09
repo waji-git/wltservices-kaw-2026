@@ -8,6 +8,9 @@ const UserSchema = new Schema(
     employeeNo: { type: String, required: true },
     email: { type: String },
     password: { type: String, required: true },
+    phone: String, // Store phone number for OTP
+    otp: String, // Hashed or raw OTP string
+    otpExpiresAt: Date,
     role: {
       type: String,
       enum: ["employee", "admin"],

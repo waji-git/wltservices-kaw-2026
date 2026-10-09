@@ -7,10 +7,10 @@ import bcrypt from "bcryptjs";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, employeeNo, email, password, role } = body;
+    const { name, employeeNo, email, password,phone, role } = body;
 
     // 🔍 DEBUG LOG: Check terminal output when registering
-    console.log("RECEIVED REGISTER PAYLOAD:", { name, employeeNo,email, role });
+    console.log("RECEIVED REGISTER PAYLOAD:", { name, employeeNo,email,phone, role });
 
     if (!name || !password) {
       return NextResponse.json(
@@ -59,6 +59,7 @@ export async function POST(request: Request) {
       employeeNo,
       email,
       password: hashedPassword,
+      phone,
       role: assignedRole,
     });
 
