@@ -414,14 +414,21 @@ export default function MovementPage() {
                 (m) => m.inDate === day.fullDateStr
               );
 
-              // 1. Check if the day is strictly in the past (before today)
-              const isPastDay = day.fullDateStr < todayStr;
+              // 1. Check if the selected month is strictly the current calendar month
+              const isCurrentMonth =
+                selectedMonth === currentMonthDate.getMonth() + 1 &&
+                selectedYear === currentMonthDate.getFullYear();
 
-              // 2. Check if a movement record already exists for this day
+              // 2. Check if the day is in the past or today
+              const isPastOrToday = day.fullDateStr <= todayStr;
+
+              // 3. Check if a movement record already exists for this day
               const hasExistingMovement = dayMovements.length > 0;
 
               // Determine if the user is allowed to add a movement on this day
-              const canAddMovement = isPastDay && !hasExistingMovement;
+              // (Must be the current month, past/today date, and no existing movement)
+              const canAddMovement =
+                isCurrentMonth && isPastOrToday && !hasExistingMovement;
 
               return (
                 <React.Fragment key={day.fullDateStr}>
@@ -617,7 +624,7 @@ export default function MovementPage() {
                     )
                   )}
 
-                  {/* Add Movement Button Row (Only rendered if past day AND no existing entry) */}
+                  {/* Add Movement Button Row (Only rendered if current month, past/today day, AND no existing entry) */}
                   {canAddMovement && (
                     <tr>
                       <td colSpan={10} className="p-2.5 text-center">
